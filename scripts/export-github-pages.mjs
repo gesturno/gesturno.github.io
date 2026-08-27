@@ -37,7 +37,11 @@ const routes = [
 for (const [route, relativeFile] of routes) {
   const destination = path.join(outputDir, relativeFile);
   await mkdir(path.dirname(destination), { recursive: true });
-  await writeFile(destination, await render(route), "utf8");
+  let html = await render(route);
+  if (route === "/") {
+    html = html.replace(/<head>/i, '<head><meta name="google-site-verification" content="JLunHgAzGgExBldn1HR2rDUBuvFRs5YSvKKvM--JJvs" />');
+  }
+  await writeFile(destination, html, "utf8");
 }
 
 await writeFile(path.join(outputDir, ".nojekyll"), "# Disable Jekyll processing\n", "utf8");

@@ -18,10 +18,13 @@ export const metadata: Metadata = {
     type: "website",
   },
   robots: { index: true, follow: true },
+  verification: {
+    google: "JLunHgAzGgExBldn1HR2rDUBuvFRs5YSvKKvM--JJvs",
+  },
 };
 
 export const viewport: Viewport = { width: "device-width", initialScale: 1, themeColor: "#032417", colorScheme: "light" };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="es"><body>{children}</body></html>;
+  return <html lang="es"><head><meta name="google-site-verification" content="JLunHgAzGgExBldn1HR2rDUBuvFRs5YSvKKvM--JJvs" /></head><body>{children}</body></html>;
 }

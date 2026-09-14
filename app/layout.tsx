@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://gesturno.github.io"),
+  metadataBase: new URL("https://gesturno.eu"),
   title: { default: "GesTurno", template: "%s" },
   description: "Descarga GesTurno en Google Play y organiza turnos, cuadrantes, horas, notas y agenda laboral desde Android.",
   applicationName: "GesTurno",
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "GesTurno · Tu cuadrante, bajo control",
     description: "Descarga GesTurno para Android: planificación laboral clara, flexible y privada para profesionales a turnos.",
-    url: "https://gesturno.github.io/",
+    url: "https://gesturno.eu/",
     siteName: "GesTurno",
     images: [{ url: "/gesturno-social.png", width: 1200, height: 630, alt: "GesTurno, calendario laboral y control de horas" }],
     locale: "es_ES",

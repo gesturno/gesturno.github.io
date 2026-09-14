@@ -85,6 +85,7 @@ function Header({ lang, setLang }: { lang: Lang; setLang: (lang: Lang) => void }
           <label className="language-picker">
             <Globe2 size={17} aria-hidden="true" />
             <span className="sr-only">{c.language}</span>
+            <span className="language-code" aria-hidden="true">{lang.toUpperCase()}</span>
             <select value={lang} onChange={(event) => setLang(event.target.value as Lang)} aria-label={c.language}>
               {languages.map((item) => <option value={item.code} key={item.code}>{item.label}</option>)}
             </select>
@@ -142,6 +143,7 @@ function HomePage({ lang }: { lang: Lang }) {
           <a href="/privacy/">{c.privacyBand.link}<ArrowRight size={17} /></a>
         </div>
       </section>
+      <PresentationVideoSection lang={lang} />
       <section className="section shell" id="features">
         <div className="section-heading"><span className="kicker">GES·TURNO / 01</span><h2>{c.featuresTitle}</h2><p>{c.featuresLead}</p></div>
         <div className="feature-grid">
@@ -151,6 +153,7 @@ function HomePage({ lang }: { lang: Lang }) {
           })}
         </div>
       </section>
+      <PlayReviewsSection lang={lang} />
       <section className="workflow-section">
         <div className="shell workflow-grid">
           <div className="workflow-intro"><span className="kicker light">GES·TURNO / 02</span><h2>{c.workflowTitle}</h2><p>{c.workflowLead}</p><a className="text-link" href="/guide/">{c.nav.guide}<ArrowRight size={17} /></a></div>
@@ -159,6 +162,57 @@ function HomePage({ lang }: { lang: Lang }) {
       </section>
       <DownloadSection lang={lang} />
     </>
+  );
+}
+
+function PresentationVideoSection({ lang }: { lang: Lang }) {
+  const c = copyByLanguage[lang].video;
+  return (
+    <section className="video-section" aria-labelledby="presentation-video-title">
+      <div className="shell video-grid">
+        <div className="video-copy">
+          <span className="kicker">{c.eyebrow}</span>
+          <h2 id="presentation-video-title">{c.title}</h2>
+          <p>{c.body}</p>
+          <a className="text-link" href="https://youtu.be/iRaKBYB8YCk" target="_blank" rel="noreferrer">
+            {c.link}<ArrowRight size={17} />
+          </a>
+        </div>
+        <div className="video-frame">
+          <iframe
+            src="https://www.youtube-nocookie.com/embed/iRaKBYB8YCk"
+            title={c.label}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PlayReviewsSection({ lang }: { lang: Lang }) {
+  const c = copyByLanguage[lang].playReviews;
+  return (
+    <section className="reviews-section">
+      <div className="shell reviews-grid">
+        <div className="reviews-score">
+          <span className="kicker">{c.eyebrow}</span>
+          <div className="score-number">{c.average}</div>
+          <div className="stars" aria-label={`${c.average} ${c.averageLabel}`}>
+            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+          </div>
+          <strong>{c.averageLabel}</strong>
+        </div>
+        <div className="reviews-copy">
+          <h2>{c.title}</h2>
+          <p>{c.body}</p>
+          <p className="reviews-note">{c.note}</p>
+          <a className="text-link" href={PLAY_STORE_URL} target="_blank" rel="noreferrer">{c.link}<ArrowRight size={17} /></a>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -230,9 +284,60 @@ function Footer({ lang }: { lang: Lang }) {
   );
 }
 
-export default function GesTurnoSite({ page }: { page: PageKind }) {
-  const [lang, setLangState] = useState<Lang>("es");
+export function ProfessionPage({ lang, profession }: { lang: Lang; profession: string }) {
+  const content = professionContent[lang]?.[profession] ?? localizedProfessionFallback(lang, profession);
+  return (
+    <>
+      <section className="page-hero">
+        <div className="page-hero-pattern" aria-hidden="true" />
+        <div className="shell"><span className="page-icon"><Route /></span><span className="kicker light">GES·TURNO / {profession.toUpperCase()}</span><h1>{content.title}</h1><p>{content.lead}</p></div>
+      </section>
+      <section className="content-layout shell">
+        <aside className="content-aside"><strong>{content.aside}</strong><p>GesTurno · Android</p><a href="/guide/">{copyByLanguage[lang].nav.guide}<ArrowRight size={15} /></a></aside>
+        <div className="content-stack">
+          {content.sections.map((section) => <article className="content-section" key={section.title}><h2>{section.title}</h2><p>{section.body}</p></article>)}
+          <a className="button primary" href={PLAY_STORE_URL} target="_blank" rel="noreferrer">{copyByLanguage[lang].download.button}<Download size={18} /></a>
+        </div>
+      </section>
+    </>
+  );
+}
+
+type ProfessionCopy = { title: string; lead: string; aside: string; sections: Card[] };
+const professionContent: Record<Lang, Record<string, ProfessionCopy>> = {
+  es: {
+    "guardia-civil": { title: "Aplicación para organizar turnos de Guardia Civil", lead: "Planifica guardias, servicios, noches y festivos con un cuadrante personal claro y flexible.", aside: "GesTurno para Guardia Civil", sections: [{ title: "Organiza tus servicios", body: "Crea servicios con horario, color, abreviatura y duración para reflejar tus guardias y turnos reales." }, { title: "Controla las horas", body: "Consulta horas trabajadas, nocturnas, festivas y de fin de semana por mes, trimestre o año." }, { title: "Comparte y conserva tu cuadrante", body: "Usa grupos de cuadrantes, intercambios, exportaciones y copias cifradas para mantener tu información bajo control." }] },
+    policia: { title: "Aplicación de turnos para Policía", lead: "Gestiona turnos rotativos, servicios, cambios y horas trabajadas desde tu teléfono Android.", aside: "GesTurno para Policía", sections: [{ title: "Cuadrante para turnos policiales", body: "Asigna servicios a cada día, usa patrones repetibles y distingue rápidamente cada turno por su color y abreviatura." }, { title: "Cambios e intercambios", body: "Consulta la matriz del equipo y propone intercambios cuando necesites coordinarte con tus compañeros." }, { title: "Más control del tiempo", body: "Revisa balances, noches, festivos y fines de semana sin perder de vista el cuadrante oficial." }] },
+    sanitarios: { title: "Aplicación para turnos de sanitarios", lead: "Organiza turnos de mañana, tarde, noche y guardias hospitalarias en un calendario laboral sencillo.", aside: "GesTurno para sanitarios", sections: [{ title: "Turnos y guardias", body: "Configura jornadas, turnos que cruzan medianoche y secuencias para semanas o meses completos." }, { title: "Horas y descansos", body: "Consulta horas realizadas y exigibles, vacaciones, festivos y periodos de referencia." }, { title: "Agenda profesional", body: "Separa contactos, citas y recordatorios de trabajo de tu agenda personal y exporta la información cuando lo necesites." }] },
+    turnos: { title: "Aplicación para turnos rotativos y guardias", lead: "Una herramienta Android para planificar horarios variables, controlar horas y consultar tu cuadrante en cualquier momento.", aside: "GesTurno para turnos rotativos", sections: [{ title: "Patrones flexibles", body: "Crea secuencias de servicios y aplícalas desde una fecha para completar tu calendario sin introducir cada día manualmente." }, { title: "Noches, festivos y fines de semana", body: "Define cómo se computa cada servicio y consulta los balances con los criterios de tu jornada." }, { title: "Tu información, contigo", body: "Trabaja sin cuenta obligatoria, guarda los datos principales en el dispositivo y crea copias cifradas para cambiar de teléfono." }] },
+  },
+} as Record<Lang, Record<string, ProfessionCopy>>;
+
+const localizedProfessionFallbacks: Partial<Record<Lang, { audience: string; work: string; title: string; lead: string }>> = {
+  en: { audience: "shift workers", work: "shifts, duties and working hours", title: "Organize your work schedule with GesTurno", lead: "Plan rotating shifts, duties and working hours in a clear Android calendar." },
+  ca: { audience: "professionals amb torns", work: "torns, serveis i hores treballades", title: "Organitza els teus torns de treball amb GesTurno", lead: "Planifica torns rotatius, serveis i hores treballades en un calendari Android clar." },
+  de: { audience: "Schichtarbeitende", work: "Schichten, Dienste und Arbeitszeiten", title: "Arbeitszeiten mit GesTurno organisieren", lead: "Plane Schichtdienste und Arbeitszeiten in einem übersichtlichen Android-Kalender." },
+  eu: { audience: "txandaka lan egiten duten profesionalak", work: "txandak, zerbitzuak eta lanorduak", title: "Antolatu zure lan-txandak GesTurnorekin", lead: "Planifikatu txandak, zerbitzuak eta lanorduak Android egutegi argi batean." },
+  fr: { audience: "professionnels en horaires décalés", work: "horaires, services et heures travaillées", title: "Organisez vos horaires avec GesTurno", lead: "Planifiez vos horaires variables et vos heures travaillées dans un calendrier Android clair." },
+  gl: { audience: "profesionais con quendas", work: "quendas, servizos e horas traballadas", title: "Organiza as túas quendas con GesTurno", lead: "Planifica quendas, servizos e horas traballadas nun calendario Android claro." },
+  it: { audience: "professionisti con turni", work: "turni, servizi e ore lavorate", title: "Organizza i tuoi turni con GesTurno", lead: "Pianifica turni, servizi e ore lavorate in un calendario Android chiaro." },
+  pt: { audience: "profissionais por turnos", work: "turnos, serviços e horas trabalhadas", title: "Organize os seus turnos com o GesTurno", lead: "Planeie turnos, serviços e horas trabalhadas num calendário Android claro." },
+};
+
+function localizedProfessionFallback(lang: Lang, profession: string): ProfessionCopy {
+  const copy = localizedProfessionFallbacks[lang] ?? { audience: "profesionales a turnos", work: "turnos, servicios y horas trabajadas", title: "Organiza tus turnos de trabajo con GesTurno", lead: "Planifica turnos rotativos, servicios y horas trabajadas en un calendario Android claro." };
+  const professionNames: Record<string, string> = { "guardia-civil": "Guardia Civil", policia: "Policía", sanitarios: "sanitarios", turnos: copy.audience };
+  const name = professionNames[profession] ?? professionNames.turnos;
+  return { title: `${copy.title}: ${name}`, lead: copy.lead, aside: `GesTurno · ${name}`, sections: [{ title: copy.work, body: copy.lead }, { title: "Calendar and control", body: `GesTurno helps ${copy.audience} plan ${name.toLowerCase()}, review working hours and keep their schedule available on Android.` }, { title: "Download GesTurno", body: "Use the complete guide to configure your calendar, patterns, reminders, exports and secure backups." }] };
+}
+
+export default function GesTurnoSite({ page, initialLang, profession }: { page: PageKind; initialLang?: Lang; profession?: string }) {
+  const [lang, setLangState] = useState<Lang>(initialLang ?? "es");
   useEffect(() => {
+    if (initialLang) {
+      document.documentElement.lang = copyByLanguage[initialLang].locale;
+      return;
+    }
     const query = new URLSearchParams(window.location.search).get("lang");
     const saved = window.localStorage.getItem("gesturno-language");
     const browser = window.navigator.language.slice(0, 2);
@@ -241,7 +346,7 @@ export default function GesTurnoSite({ page }: { page: PageKind }) {
       const timer = window.setTimeout(() => setLangState(selected), 0);
       return () => window.clearTimeout(timer);
     }
-  }, []);
+  }, [initialLang]);
   const setLang = (next: Lang) => {
     setLangState(next);
     window.localStorage.setItem("gesturno-language", next);
@@ -254,7 +359,7 @@ export default function GesTurnoSite({ page }: { page: PageKind }) {
     applicationCategory: "BusinessApplication",
     operatingSystem: "Android",
     inLanguage: languages.map((item) => item.code),
-    url: `https://gesturno.github.io${paths[page]}`,
+    url: `https://gesturno.eu${paths[page]}`,
     installUrl: PLAY_STORE_URL,
     offers: { "@type": "Offer", price: "0", priceCurrency: "EUR" },
   }), [page]);
@@ -262,7 +367,7 @@ export default function GesTurnoSite({ page }: { page: PageKind }) {
     <div className="site-shell">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <Header lang={lang} setLang={setLang} />
-      <main>{page === "home" ? <HomePage lang={lang} /> : <ContentPage lang={lang} page={page} />}</main>
+      <main>{profession ? <ProfessionPage lang={lang} profession={profession} /> : page === "home" ? <HomePage lang={lang} /> : <ContentPage lang={lang} page={page} />}</main>
       <Contact lang={lang} />
       <Footer lang={lang} />
     </div>
